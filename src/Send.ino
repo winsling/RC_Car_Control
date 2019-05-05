@@ -56,9 +56,8 @@ void setup()
 
 void loop()
 {
-  SerializedData.command.Speed = analogRead(SpdPin);
   SerializedData.command.SteeringAngle = analogRead(StePin);
-
+  SerializedData.command.Speed = map(analogRead(SpdPin),0,1023,74,96);
   interPacketDelay = 200;
 
   Serial.print("Sending:");
