@@ -26,6 +26,7 @@ int interPacketDelay = 50; //wait this many ms between sending packets
 char input = 0;
 int SpdPin = 0;
 int StePin = 1;
+int StatusPin = 1;
 int Ste = 0;
 int Spd = 0;
 
@@ -73,8 +74,14 @@ void loop()
   if (requestACK)
   {
     Serial.print(" - waiting for ACK...");
-    if (waitForAck()) Serial.println("ok!");
-    else Serial.println("nothing...");
+    if (waitForAck()) {
+      Serial.println("ok!");
+      digitalWrite(StatusPin,HIGH);
+    }
+    else {
+      Serial.println("nothing...");
+      digitalWrite(StatusPin,LOW);
+    }
   }
   radio.Sleep();
   
