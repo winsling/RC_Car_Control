@@ -44,8 +44,33 @@ union SerializedData_type {
 RFM12B radio;
 bool requestACK=false;
 
+// Es gilt prescale / cpufreq * count = deltaT 
+// => count = deltaT * cpufreq / prescale count = 0.2 * 16000000 / 256 = 12500
+// => maxcount - initcount = deltaT * cpufreq / prescale 
+// => initcount = maxcount - deltaT * cpufreq / prescale initcount = 65536 - 12500 = 53036
+// Beispielsrechnung: Alle 0,5 Sekunden soll ein Timer-Overflow-Interrupt stattfinden.
+// Wir verwenden einen 16-Bit-Timer: bits = 16 => maxcount = 216 = 65536.
+// Wir benötigen einen Timer Overflow pro halbe Sekunde. deltaT = 0,5 sec = 1 / timerfreq
+// Die Taktfrequenz des Arduino-Board beträgt cpufreq = 16 MHz = 16.000.000 Hz
+// Als Prescale-Wert liegt prescale = 256 vor.
+// Der Timer startet statt mit 0 mit folgendem Anfangszählerstand initcount = 65.536 - 8.000.000/256 = 34.286
+
+
 void setup()
 {
+
+
+  // Timer 1
+  noInterrupts();           // Alle Interrupts temporär abschalten
+  TCCR1A = 0;
+  TCCR1B = 0;
+
+  TCNT1 = 53036;            // Timer nach obiger Rechnung vorbelegen
+  TCCR1B |= (1 << CS12);    // 256 als Prescale-Wert spezifizieren
+  TIMSK1 |= (1 << TOIE1);   // Timer Overflow Interrupt aktivieren
+  interrupts();             // alle Interrupts scharf schalten
+
+  
   Serial.begin(SERIAL_BAUD);
   radio.Initialize(NODEID, RF12_868MHZ, NETWORKID);
   radio.Encrypt(KEY);
@@ -53,33 +78,40 @@ void setup()
   Serial.println("Transmitting...\n\n");
 }
 
-void loop()
+ISR(TIMER1_OVF_vect)        
+{
+  TCNT1 = 53036;             // Zähler erneut vorbelegen
+  rfm_handling();
+}
+
+
+
+void rfm_handling()
 {
   SerializedData.command.SteeringAngle = map(analogRead(StePin),0,1023,0,180);
   SerializedData.command.Speed = map(analogRead(SpdPin),0,1023,70,96);
-  interPacketDelay = 200;
-
-  Serial.print("Sending:");
   
   requestACK = 1;
   radio.Wakeup();
   radio.Send(GATEWAYID, SerializedData.command_serial, 14, requestACK);
   if (requestACK)
   {
-    Serial.print(" - waiting for ACK...");
+
     if (waitForAck()) {
-      Serial.println("ok!");
+
       digitalWrite(StatusPin,HIGH);
     }
     else {
-      Serial.println("nothing...");
+
       digitalWrite(StatusPin,LOW);
     }
   }
   radio.Sleep();
-  
-  Serial.println();
-  delay(interPacketDelay);
+
+}
+
+void loop()
+{
 }
 
 // wait a few milliseconds for proper ACK, return true if received
