@@ -42,10 +42,8 @@ union SerializedData_type {
 
 // Need an instance of the Radio Module
 RFM12B radio;
-byte sendSize=0;
-char payload[] = "StAng20 Spd40";
 bool requestACK=false;
-String Command;
+
 void setup()
 {
   Serial.begin(SERIAL_BAUD);
@@ -62,12 +60,7 @@ void loop()
   interPacketDelay = 200;
 
   Serial.print("Sending:");
-
   
-  //Command = String(Spd)+" "+String(Ste);
-  //Command.toCharArray(payload, 14);
-
-  //requestACK = !(sendSize % 3); //request ACK every 3rd xmission
   requestACK = 1;
   radio.Wakeup();
   radio.Send(GATEWAYID, SerializedData.command_serial, 14, requestACK);
@@ -85,7 +78,6 @@ void loop()
   }
   radio.Sleep();
   
-  sendSize = (sendSize + 1) % 13;
   Serial.println();
   delay(interPacketDelay);
 }
