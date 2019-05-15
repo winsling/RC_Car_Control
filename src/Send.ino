@@ -91,9 +91,12 @@ void rfm_handling()
   SerializedData.command.SteeringAngle = map(analogRead(StePin),0,1023,0,180);
   SerializedData.command.Speed = map(analogRead(SpdPin),0,1023,70,96);
   
-  requestACK = 1;
+  requestACK = 0;
   radio.Wakeup();
   radio.Send(GATEWAYID, SerializedData.command_serial, 14, requestACK);
+
+  digitalWrite(StatusPin, digitalRead(StatusPin) ^ 1); // dient nur um festzustellen, dass der ISR1 funktioniert, danach kann requestACK wieder auf "1" gesetzt werden
+
   if (requestACK)
   {
 
