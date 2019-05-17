@@ -33,7 +33,7 @@ int Spd = 0;
 struct command_type {
   int Speed;
   int SteeringAngle;
-  bool FrontLight;
+  int FrontLight;
 };
 
 union SerializedData_type {
