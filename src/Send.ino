@@ -27,6 +27,7 @@ char input = 0;
 int SpdPin = 0;
 int StePin = 1;
 int StatusPin = 3;
+int FrontLightPin = 4;
 int Ste = 0;
 int Spd = 0;
 
@@ -55,7 +56,8 @@ void setup()
   radio.Initialize(NODEID, RF12_868MHZ, NETWORKID);
   radio.Encrypt(KEY);
   radio.Sleep(); //sleep right away to save power
-  pinMode(3,OUTPUT);
+  pinMode(StatusPin,OUTPUT);
+  pinMode(FrontLightPin,INPUT);
   }
 
 
@@ -88,9 +90,12 @@ void rfm_handling()
   }
   radio.Sleep();
 
+  SerializedData.command.FrontLight = digitalRead(FrontLightPin);
+
   t2=millis();
 
   Serial.println(t2-t1);
+  Serial.println(digitalRead(FrontLightPin));
 
 }
 
