@@ -28,6 +28,7 @@ int SpdPin = 0;
 int StePin = 1;
 int StatusPin = 3;
 int FrontLightPin = 4;
+int PushPin = 5;
 int Ste = 0;
 int Spd = 0;
 
@@ -58,6 +59,7 @@ void setup()
   radio.Sleep(); //sleep right away to save power
   pinMode(StatusPin,OUTPUT);
   pinMode(FrontLightPin,INPUT);
+  pinMode(PushPin,INPUT);
   }
 
 
@@ -102,6 +104,7 @@ void rfm_handling()
 void loop()
 {
   rfm_handling();
+  Serial.println(digitalRead(PushPin));
 }
 
 // wait a few milliseconds for proper ACK, return true if received
