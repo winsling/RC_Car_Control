@@ -26,28 +26,28 @@ int interPacketDelay = 50; //wait this many ms between sending packets
 char input = 0;
 int SpdPin = 0;
 int StePin = 1;
-int StatusPin = 3;
+int StatusLEDPin = 3;
 int FrontLightPin = 4;
-int PushPin = 5;
+int ENPOSwitchPin = 5;
 int Ste = 0;
 int Spd = 0;
 
 struct command_type {
   int Speed;
   int SteeringAngle;
-  int FrontLight;
+  bool FrontLight;
+  bool ENPO;
+
 };
 
 union SerializedData_type {
   command_type command;
-  char command_serial[14];
+  char command_serial[8];
 } SerializedData;
 
 // Need an instance of the Radio Module
 RFM12B radio;
 bool requestACK=false;
-
-
 
 void setup()
 {
@@ -56,10 +56,11 @@ void setup()
   Serial.begin(SERIAL_BAUD);
   radio.Initialize(NODEID, RF12_868MHZ, NETWORKID);
   radio.Encrypt(KEY);
-  radio.Sleep(); //sleep right away to save power
-  pinMode(StatusPin,OUTPUT);
-  pinMode(FrontLightPin,INPUT);
-  pinMode(PushPin,INPUT);
+  // radio.Sleep(); //sleep right away to save power
+  radio.Wakeup();
+  pinMode(StatusLEDPin,OUTPUT);
+  pinMode(FrontLightSwitchPin,INPUT);
+  pinMode(ENPOSwitchPin,INPUT);
   }
 
 
@@ -68,43 +69,34 @@ void setup()
 void rfm_handling()
 {
   unsigned long t1,t2;
+  int Steer_Temp=analogRead(StePin);
+
+  if ((Steer_Temp > 500) && (Steer_Temp < 523)) Steer_Temp = 511; // Filter Poti noise
 
   t1=millis();
   
-  SerializedData.command.SteeringAngle = map(analogRead(StePin),0,1023,0,180);
+  SerializedData.command.SteeringAngle = map(Steer_Temp,0,1023,0,180);
   SerializedData.command.Speed = map(analogRead(SpdPin),0,1023,70,96);
+  SerializedData.command.FrontLight = digitalRead(FrontLightSwitchPin) > 0;
+  SerializedData.command.ENPO = digitalRead(ENPOSwitchPin) > 0;
   
   requestACK = 1;
-  radio.Wakeup();
-  radio.Send(GATEWAYID, SerializedData.command_serial, 14, requestACK);
+  //radio.Wakeup(); // removed for speed up ?
+  radio.Send(GATEWAYID, SerializedData.command_serial, 8, requestACK);
 
-    if (requestACK)
-  {
-
-    if (waitForAck()) {
-
-      digitalWrite(StatusPin,HIGH);
+  if (requestACK)
+    {
+      if (waitForAck()) digitalWrite(StatusLEDPin,HIGH);
+      else digitalWrite(StatusLEDPin,LOW);
     }
-    else {
-
-      digitalWrite(StatusPin,LOW);
-    }
-  }
-  radio.Sleep();
-
-  SerializedData.command.FrontLight = digitalRead(FrontLightPin);
-
+  //radio.Sleep();
   t2=millis();
-
   Serial.println(t2-t1);
-  Serial.println(digitalRead(FrontLightPin));
-
 }
 
 void loop()
 {
   rfm_handling();
-  Serial.println(digitalRead(PushPin));
 }
 
 // wait a few milliseconds for proper ACK, return true if received
