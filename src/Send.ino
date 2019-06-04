@@ -60,7 +60,7 @@ void setup()
   radio.Wakeup();
   pinMode(StatusLEDPin,OUTPUT);
   pinMode(FrontLightSwitchPin,INPUT);
-  pinMode(ENPOSwitchPin,INPUT);
+  pinMode(ENPOSwitchPin,INPUT_PULLUP);
   }
 
 
@@ -91,7 +91,8 @@ void rfm_handling()
     }
   //radio.Sleep();
   t2=millis();
-  Serial.println(t2-t1);
+  //Serial.println(t2-t1);
+  Serial.println(SerializedData.command.ENPO);
 }
 
 void loop()
