@@ -31,18 +31,34 @@ int FrontLightSwitchPin = 4;
 int ENPOSwitchPin = 5;
 int Ste = 0;
 int Spd = 0;
+int MultiBlueBtnPin   = 9;
+int MultiWhiteBtnPin  = 8;
+int MultiYellowBtnPin = 7;
+int MultiRedBtnPin    = 6;
+int MultiOrangeBtnPin = A2;
+int MultiGreenBtnPin  = A3;
+int MultiGrayBtnPin   = A4;
+int MultiBlackBtnPin  = A5;
+
 
 struct command_type {
   int Speed;
   int SteeringAngle;
   bool FrontLight;
   bool ENPO;
-
+  bool MultiBlueBtn;
+  bool MultiWhiteBtn;
+  bool MultiYellowBtn;
+  bool MultiRedBtn;
+  bool MultiOrangeBtn;
+  bool MultiGreenBtn;
+  bool MultiGrayBtn;
+  bool MultiBlackBtn;
 };
 
 union SerializedData_type {
   command_type command;
-  char command_serial[8];
+  char command_serial[10];
 } SerializedData;
 
 // Need an instance of the Radio Module
@@ -61,6 +77,14 @@ void setup()
   pinMode(StatusLEDPin,OUTPUT);
   pinMode(FrontLightSwitchPin,INPUT);
   pinMode(ENPOSwitchPin,INPUT_PULLUP);
+  pinMode(MultiBlueBtnPin,INPUT_PULLUP);
+  pinMode(MultiWhiteBtnPin,INPUT_PULLUP);
+  pinMode(MultiYellowBtnPin,INPUT_PULLUP);
+  pinMode(MultiRedBtnPin,INPUT_PULLUP);
+  pinMode(MultiOrangeBtnPin,INPUT_PULLUP);
+  pinMode(MultiGreenBtnPin,INPUT_PULLUP);
+  pinMode(MultiGrayBtnPin,INPUT_PULLUP);
+  pinMode(MultiBlackBtnPin,INPUT_PULLUP);
   }
 
 
@@ -79,7 +103,33 @@ void rfm_handling()
   SerializedData.command.Speed = map(analogRead(SpdPin),0,1023,70,96);
   SerializedData.command.FrontLight = digitalRead(FrontLightSwitchPin) > 0;
   SerializedData.command.ENPO = digitalRead(ENPOSwitchPin) > 0;
+  SerializedData.command.MultiBlueBtn = digitalRead(MultiBlueBtnPin) > 0;
+  SerializedData.command.MultiWhiteBtn = digitalRead(MultiWhiteBtnPin) > 0;
+  SerializedData.command.MultiYellowBtn = digitalRead(MultiYellowBtnPin) > 0;
+  SerializedData.command.MultiRedBtn = digitalRead(MultiRedBtnPin) > 0;
+  SerializedData.command.MultiOrangeBtn = digitalRead(MultiOrangeBtnPin) > 0;
+  SerializedData.command.MultiGreenBtn = digitalRead(MultiGreenBtnPin) > 0;
+  SerializedData.command.MultiGrayBtn = digitalRead(MultiGrayBtnPin) > 0;
+  SerializedData.command.MultiBlackBtn = digitalRead(MultiBlackBtnPin) > 0;
   
+
+  Serial.print(SerializedData.command.MultiOrangeBtn);
+  Serial.print(" ");
+  Serial.print(SerializedData.command.MultiGreenBtn);
+  Serial.print(" ");
+  Serial.print(SerializedData.command.MultiGrayBtn);
+  Serial.print(" ");
+  Serial.print(SerializedData.command.MultiBlackBtn);
+  Serial.print(" ");
+  Serial.print(SerializedData.command.MultiBlueBtn);
+  Serial.print(" ");
+  Serial.print(SerializedData.command.MultiWhiteBtn);
+  Serial.print(" ");
+  Serial.print(SerializedData.command.MultiYellowBtn);
+  Serial.print(" ");
+  Serial.print(SerializedData.command.MultiRedBtn);
+  Serial.println(" ");
+
   requestACK = 1;
   //radio.Wakeup(); // removed for speed up ?
   radio.Send(GATEWAYID, SerializedData.command_serial, 8, requestACK);
@@ -92,7 +142,7 @@ void rfm_handling()
   //radio.Sleep();
   t2=millis();
   //Serial.println(t2-t1);
-  Serial.println(SerializedData.command.ENPO);
+  
 }
 
 void loop()
