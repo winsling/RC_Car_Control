@@ -31,6 +31,33 @@ int FrontLightSwitchPin = 4;
 int ENPOSwitchPin = 5;
 int Ste = 0;
 int Spd = 0;
+
+struct MultiBtnBitFieldType {
+  bool MultiBlueBtn:1;
+  bool MultiWhiteBtn:1;
+  bool MultiYellowBtn:1;
+  bool MultiRedBtn:1;
+  bool MultiOrangeBtn:1;
+  bool MultiGreenBtn:1;
+  bool MultiGrayBtn:1;
+  bool MultiBlackBtn:1;
+};
+
+union MultiBtnCharType {
+
+  MultiBtnBitFieldType MultiBtnBitField;
+  char MultiBtnByte;
+} MultiBtnRcvChar;
+
+struct command_type {
+  int Speed;
+  int SteeringAngle;
+  bool FrontLight;
+  bool ENPO;
+  char MultiBtnChar;
+};
+
+
 int MultiBlueBtnPin   = 9;
 int MultiWhiteBtnPin  = 8;
 int MultiYellowBtnPin = 7;
@@ -41,25 +68,12 @@ int MultiGrayBtnPin   = A4;
 int MultiBlackBtnPin  = A5;
 
 
-struct command_type {
-  int Speed;
-  int SteeringAngle;
-  bool FrontLight;
-  bool ENPO;
-  bool MultiBlueBtn;
-  bool MultiWhiteBtn;
-  bool MultiYellowBtn;
-  bool MultiRedBtn;
-  bool MultiOrangeBtn;
-  bool MultiGreenBtn;
-  bool MultiGrayBtn;
-  bool MultiBlackBtn;
-};
 
 union SerializedData_type {
   command_type command;
   char command_serial[10];
 } SerializedData;
+
 
 // Need an instance of the Radio Module
 RFM12B radio;
@@ -103,31 +117,31 @@ void rfm_handling()
   SerializedData.command.Speed = map(analogRead(SpdPin),0,1023,70,96);
   SerializedData.command.FrontLight = digitalRead(FrontLightSwitchPin) > 0;
   SerializedData.command.ENPO = digitalRead(ENPOSwitchPin) > 0;
-  SerializedData.command.MultiBlueBtn = digitalRead(MultiBlueBtnPin) > 0;
-  SerializedData.command.MultiWhiteBtn = digitalRead(MultiWhiteBtnPin) > 0;
-  SerializedData.command.MultiYellowBtn = digitalRead(MultiYellowBtnPin) > 0;
-  SerializedData.command.MultiRedBtn = digitalRead(MultiRedBtnPin) > 0;
-  SerializedData.command.MultiOrangeBtn = digitalRead(MultiOrangeBtnPin) > 0;
-  SerializedData.command.MultiGreenBtn = digitalRead(MultiGreenBtnPin) > 0;
-  SerializedData.command.MultiGrayBtn = digitalRead(MultiGrayBtnPin) > 0;
-  SerializedData.command.MultiBlackBtn = digitalRead(MultiBlackBtnPin) > 0;
-  
+  MultiBtnRcvChar.MultiBtnBitField.MultiBlueBtn = digitalRead(MultiBlueBtnPin) > 0;
+  MultiBtnRcvChar.MultiBtnBitField.MultiWhiteBtn = digitalRead(MultiWhiteBtnPin) > 0;
+  MultiBtnRcvChar.MultiBtnBitField.MultiYellowBtn = digitalRead(MultiYellowBtnPin) > 0;
+  MultiBtnRcvChar.MultiBtnBitField.MultiRedBtn = digitalRead(MultiRedBtnPin) > 0;
+  MultiBtnRcvChar.MultiBtnBitField.MultiOrangeBtn = digitalRead(MultiOrangeBtnPin) > 0;
+  MultiBtnRcvChar.MultiBtnBitField.MultiGreenBtn = digitalRead(MultiGreenBtnPin) > 0;
+  MultiBtnRcvChar.MultiBtnBitField.MultiGrayBtn = digitalRead(MultiGrayBtnPin) > 0;
+  MultiBtnRcvChar.MultiBtnBitField.MultiBlackBtn = digitalRead(MultiBlackBtnPin) > 0;
+  SerializedData.command.MultiBtnChar = MultiBtnRcvChar.MultiBtnByte;
 
-  Serial.print(SerializedData.command.MultiOrangeBtn);
+  Serial.print(MultiBtnRcvChar.MultiBtnBitField.MultiOrangeBtn);
   Serial.print(" ");
-  Serial.print(SerializedData.command.MultiGreenBtn);
+  Serial.print(MultiBtnRcvChar.MultiBtnBitField.MultiGreenBtn);
   Serial.print(" ");
-  Serial.print(SerializedData.command.MultiGrayBtn);
+  Serial.print(MultiBtnRcvChar.MultiBtnBitField.MultiGrayBtn);
   Serial.print(" ");
-  Serial.print(SerializedData.command.MultiBlackBtn);
+  Serial.print(MultiBtnRcvChar.MultiBtnBitField.MultiBlackBtn);
   Serial.print(" ");
-  Serial.print(SerializedData.command.MultiBlueBtn);
+  Serial.print(MultiBtnRcvChar.MultiBtnBitField.MultiBlueBtn);
   Serial.print(" ");
-  Serial.print(SerializedData.command.MultiWhiteBtn);
+  Serial.print(MultiBtnRcvChar.MultiBtnBitField.MultiWhiteBtn);
   Serial.print(" ");
-  Serial.print(SerializedData.command.MultiYellowBtn);
+  Serial.print(MultiBtnRcvChar.MultiBtnBitField.MultiYellowBtn);
   Serial.print(" ");
-  Serial.print(SerializedData.command.MultiRedBtn);
+  Serial.print(MultiBtnRcvChar.MultiBtnBitField.MultiRedBtn);
   Serial.println(" ");
 
   requestACK = 1;
