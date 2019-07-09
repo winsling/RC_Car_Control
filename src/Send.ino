@@ -81,8 +81,6 @@ bool requestACK=false;
 
 void setup()
 {
-
-
   Serial.begin(SERIAL_BAUD);
   radio.Initialize(NODEID, RF12_868MHZ, NETWORKID);
   radio.Encrypt(KEY);
@@ -109,12 +107,10 @@ void rfm_handling()
   unsigned long t1,t2;
   int Steer_Temp=analogRead(StePin);
 
-  if ((Steer_Temp > 500) && (Steer_Temp < 523)) Steer_Temp = 511; // Filter Poti noise
-
   t1=millis();
   
   SerializedData.command.SteeringAngle = map(Steer_Temp,0,1023,0,180);
-  SerializedData.command.Speed = map(analogRead(SpdPin),0,1023,70,96);
+  SerializedData.command.Speed = map(analogRead(SpdPin),0,1023,66,96);
   SerializedData.command.FrontLight = digitalRead(FrontLightSwitchPin) > 0;
   SerializedData.command.ENPO = digitalRead(ENPOSwitchPin) > 0;
   MultiBtnRcvChar.MultiBtnBitField.MultiBlueBtn = digitalRead(MultiBlueBtnPin) < 1;
@@ -127,7 +123,7 @@ void rfm_handling()
   MultiBtnRcvChar.MultiBtnBitField.MultiBlackBtn = digitalRead(MultiBlackBtnPin) < 1;
   SerializedData.command.MultiBtnChar = MultiBtnRcvChar.MultiBtnByte;
 
-  Serial.print(MultiBtnRcvChar.MultiBtnBitField.MultiOrangeBtn);
+/*   Serial.print(MultiBtnRcvChar.MultiBtnBitField.MultiOrangeBtn);
   Serial.print(" ");
   Serial.print(MultiBtnRcvChar.MultiBtnBitField.MultiGreenBtn);
   Serial.print(" ");
@@ -143,6 +139,7 @@ void rfm_handling()
   Serial.print(" ");
   Serial.print(MultiBtnRcvChar.MultiBtnBitField.MultiRedBtn);
   Serial.println(" ");
+ */
 
   requestACK = 1;
   //radio.Wakeup(); // removed for speed up ?
@@ -153,7 +150,7 @@ void rfm_handling()
       if (waitForAck()) digitalWrite(StatusLEDPin,HIGH);
       else digitalWrite(StatusLEDPin,LOW);
     }
-  //radio.Sleep();
+
   t2=millis();
   //Serial.println(t2-t1);
   
