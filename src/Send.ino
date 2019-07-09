@@ -117,14 +117,14 @@ void rfm_handling()
   SerializedData.command.Speed = map(analogRead(SpdPin),0,1023,70,96);
   SerializedData.command.FrontLight = digitalRead(FrontLightSwitchPin) > 0;
   SerializedData.command.ENPO = digitalRead(ENPOSwitchPin) > 0;
-  MultiBtnRcvChar.MultiBtnBitField.MultiBlueBtn = !digitalRead(MultiBlueBtnPin) > 0;
-  MultiBtnRcvChar.MultiBtnBitField.MultiWhiteBtn = !digitalRead(MultiWhiteBtnPin) > 0;
-  MultiBtnRcvChar.MultiBtnBitField.MultiYellowBtn = !digitalRead(MultiYellowBtnPin) > 0;
-  MultiBtnRcvChar.MultiBtnBitField.MultiRedBtn = !digitalRead(MultiRedBtnPin) > 0;
-  MultiBtnRcvChar.MultiBtnBitField.MultiOrangeBtn = !digitalRead(MultiOrangeBtnPin) > 0;
-  MultiBtnRcvChar.MultiBtnBitField.MultiGreenBtn = !digitalRead(MultiGreenBtnPin) > 0;
-  MultiBtnRcvChar.MultiBtnBitField.MultiGrayBtn = !digitalRead(MultiGrayBtnPin) > 0;
-  MultiBtnRcvChar.MultiBtnBitField.MultiBlackBtn = !digitalRead(MultiBlackBtnPin) > 0;
+  MultiBtnRcvChar.MultiBtnBitField.MultiBlueBtn = digitalRead(MultiBlueBtnPin) < 1;
+  MultiBtnRcvChar.MultiBtnBitField.MultiWhiteBtn = digitalRead(MultiWhiteBtnPin) < 1;
+  MultiBtnRcvChar.MultiBtnBitField.MultiYellowBtn = digitalRead(MultiYellowBtnPin) < 1;
+  MultiBtnRcvChar.MultiBtnBitField.MultiRedBtn = digitalRead(MultiRedBtnPin) < 1;
+  MultiBtnRcvChar.MultiBtnBitField.MultiOrangeBtn = digitalRead(MultiOrangeBtnPin) < 1;
+  MultiBtnRcvChar.MultiBtnBitField.MultiGreenBtn = digitalRead(MultiGreenBtnPin) < 1;
+  MultiBtnRcvChar.MultiBtnBitField.MultiGrayBtn = digitalRead(MultiGrayBtnPin) < 1;
+  MultiBtnRcvChar.MultiBtnBitField.MultiBlackBtn = digitalRead(MultiBlackBtnPin) < 1;
   SerializedData.command.MultiBtnChar = MultiBtnRcvChar.MultiBtnByte;
 
   Serial.print(MultiBtnRcvChar.MultiBtnBitField.MultiOrangeBtn);
