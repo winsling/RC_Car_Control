@@ -83,7 +83,7 @@ void setup()
 {
   Serial.begin(SERIAL_BAUD);
   radio.Initialize(NODEID, RF12_868MHZ, NETWORKID);
-  radio.Encrypt(KEY);
+  //radio.Encrypt(KEY);
   // radio.Sleep(); //sleep right away to save power
   radio.Wakeup();
   pinMode(StatusLEDPin,OUTPUT);
@@ -122,24 +122,6 @@ void rfm_handling()
   MultiBtnRcvChar.MultiBtnBitField.MultiGrayBtn = digitalRead(MultiGrayBtnPin) < 1;
   MultiBtnRcvChar.MultiBtnBitField.MultiBlackBtn = digitalRead(MultiBlackBtnPin) < 1;
   SerializedData.command.MultiBtnChar = MultiBtnRcvChar.MultiBtnByte;
-
-/*   Serial.print(MultiBtnRcvChar.MultiBtnBitField.MultiOrangeBtn);
-  Serial.print(" ");
-  Serial.print(MultiBtnRcvChar.MultiBtnBitField.MultiGreenBtn);
-  Serial.print(" ");
-  Serial.print(MultiBtnRcvChar.MultiBtnBitField.MultiGrayBtn);
-  Serial.print(" ");
-  Serial.print(MultiBtnRcvChar.MultiBtnBitField.MultiBlackBtn);
-  Serial.print(" ");
-  Serial.print(MultiBtnRcvChar.MultiBtnBitField.MultiBlueBtn);
-  Serial.print(" ");
-  Serial.print(MultiBtnRcvChar.MultiBtnBitField.MultiWhiteBtn);
-  Serial.print(" ");
-  Serial.print(MultiBtnRcvChar.MultiBtnBitField.MultiYellowBtn);
-  Serial.print(" ");
-  Serial.print(MultiBtnRcvChar.MultiBtnBitField.MultiRedBtn);
-  Serial.println(" ");
- */
 
   requestACK = 1;
   //radio.Wakeup(); // removed for speed up ?
