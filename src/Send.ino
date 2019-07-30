@@ -109,7 +109,7 @@ void rfm_handling()
 
   t1=millis();
   
-  SerializedData.command.SteeringAngle = map(Steer_Temp,0,1023,0,180);
+  SerializedData.command.SteeringAngle = map(Steer_Temp,0,1023,40,180);
   SerializedData.command.Speed = map(analogRead(SpdPin),0,1023,66,96);
   SerializedData.command.FrontLight = digitalRead(FrontLightSwitchPin) > 0;
   SerializedData.command.ENPO = digitalRead(ENPOSwitchPin) > 0;
@@ -135,7 +135,7 @@ void rfm_handling()
 
   t2=millis();
   //Serial.println(t2-t1);
-  
+  //Serial.println(SerializedData.command.SteeringAngle);
 }
 
 void loop()
