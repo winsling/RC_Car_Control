@@ -135,7 +135,7 @@ void rfm_handling()
 
   t2=millis();
   //Serial.println(t2-t1);
-  //Serial.println(SerializedData.command.SteeringAngle);
+  //Serial.println(SerializedData.command.Speed);
 }
 
 void loop()
